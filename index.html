@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONSEILLER IA PRO</title>
+    <style>
+        body { background: #0a0e14; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
+        .card { background: #161b22; border: 2px solid #f1c40f; border-radius: 20px; padding: 20px; margin-top: 20px; }
+        h1 { color: #f1c40f; text-transform: uppercase; font-size: 1.2em; }
+        textarea { width: 100%; height: 120px; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 10px; padding: 10px; box-sizing: border-box; margin-top: 15px; font-size: 16px; }
+        button { background: #f1c40f; color: black; border: none; width: 100%; padding: 18px; border-radius: 10px; font-weight: bold; margin-top: 15px; cursor: pointer; }
+        #response { margin-top: 25px; text-align: left; font-size: 1em; line-height: 1.6; color: #e6edf3; display: none; border-left: 4px solid #f1c40f; padding: 15px; background: #0d1117; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div style="font-size: 3em;">🦁</div>
+    <h1>CONSEILLER DU GUERRIER</h1>
+    <textarea id="prompt" placeholder="Pose ta question business ici..."></textarea>
+    <button onclick="askAI()">INTERROGER L'IA</button>
+    <div id="response"></div>
+</div>
+<script>
+    async function askAI() {
+        const text = document.getElementById('prompt').value;
+        const respDiv = document.getElementById('response');
+        const key = "AIzaSyDU-c1cgURGo4N8Ylri9y8qWn61ThaAd-Ew"; 
+        if(!text) return alert("Quelle est ta question ?");
+        respDiv.style.display = "block";
+        respDiv.innerHTML = "Analyse en cours... ⏳";
+        try {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ contents: [{ parts: [{ text: "Tu es un expert en commerce au Sénégal. Réponds à : " + text }] }] })
+            });
+            const data = await res.json();
+            respDiv.innerHTML = "<b>CONSEIL :</b><br><br>" + data.candidates[0].content.parts[0].text.replace(/\n/g, "<br>");
+        } catch (e) { respDiv.innerHTML = "Erreur de connexion."; }
+    }
+</script>
+</body>
+</html>
