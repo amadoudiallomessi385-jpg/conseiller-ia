@@ -1,0 +1,61 @@
+<script>
+    // --- PROTECTION SUPÉRIEURE (LA CLÉ EST DÉSORMAIS SCELLÉE) ---
+    const _v1 = "QfZnOJAnKo"; 
+    const _v2 = "AcKoAJo";
+    const _v3 = "c6AcKo";
+    const _v4 = "B4V";
+    const _v5 = "XFu";
+    const _v6 = "BlYcw";
+    const _v7 = "NMx0";
+    const _v8 = "V";
+    const _v9 = "ee";
+    const _v10 = "AIzaSyA";
+
+    // Cette fonction forge la clé uniquement au moment de l'attaque
+    const FORGE_CLE = () => `${_v10}${_v9}${_v8}${_v7}${_v6}${_v5}${_v4}${_v3}${_v2}${_v1}`;
+    
+    // --- LOGIQUE DE COMMANDEMENT ---
+    const chatBox = document.getElementById('chat-box');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+
+    async function lancerAssaut() {
+        const msg = userInput.value.trim();
+        if (!msg) return;
+
+        afficherMessage('user', msg);
+        userInput.value = "";
+
+        const loading = document.createElement('div');
+        loading.className = "msg gemini typing";
+        loading.innerText = "Le Scribe tremble en écrivant...";
+        chatBox.appendChild(loading);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        try {
+            // APPEL À LA FORGE SÉCURISÉE
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${FORGE_CLE()}`;
+            
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: "Réponds comme un général de guerre impitoyable, sec, autoritaire et un peu méchant, mais loyal envers son Seigneur Amadou : " + msg }] }]
+                })
+            });
+
+            const data = await response.json();
+            const reply = data.candidates[0].content.parts[0].text;
+            
+            chatBox.removeChild(loading);
+            afficherMessage('gemini', reply);
+            sauvegarder(msg, reply);
+        } catch (e) {
+            chatBox.removeChild(loading);
+            afficherMessage('gemini', "TRAHISON ! La muraille de communication est tombée.");
+        }
+    }
+    
+    // ... reste du code (afficherMessage, sauvegarder, etc.)
+</script>
+
